@@ -6,7 +6,6 @@ import { InstagramDiagnoseCard } from "@/components/instagram-diagnose-card";
 import { EmptyState } from "@/components/empty-state";
 import { PageHeader } from "@/components/page-header";
 import { updateProductAdmin } from "@/lib/actions/product-admin";
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { cookies } from "next/headers";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
@@ -106,7 +105,6 @@ export default async function ProductsPage({ searchParams }: { searchParams?: { 
 								<td className="max-w-[360px] truncate">{p.title}</td>
 								<td>{formatPrice(p.price || 0)}</td>
 								<td className="align-top">
-									<Form>
 										<form
 											action={async (formData) => {
 												"use server";
@@ -117,24 +115,14 @@ export default async function ProductsPage({ searchParams }: { searchParams?: { 
 											className="flex items-end gap-2"
 										>
 											<input type="hidden" name="id" value={p.id} />
-											<FormField
-												name="stock"
-												render={() => (
-													<FormItem>
-										<FormLabel className="text-xs">在庫</FormLabel>
-														<FormControl>
-															<Input name="stock" type="number" min={0} step={1} defaultValue={p.stock} className="w-24" />
-														</FormControl>
-														<FormMessage />
-													</FormItem>
-												)}
-											/>
+											<label className="text-xs">
+												在庫
+												<Input name="stock" type="number" min={0} step={1} defaultValue={p.stock} className="ml-2 w-24" />
+											</label>
 											<button className="rounded-md border px-2 py-1 text-xs hover:bg-accent">保存</button>
 										</form>
-									</Form>
 								</td>
 								<td className="align-top">
-									<Form>
 										<form
 											action={async (formData) => {
 												"use server";
@@ -145,21 +133,12 @@ export default async function ProductsPage({ searchParams }: { searchParams?: { 
 											className="flex items-end gap-2"
 										>
 											<input type="hidden" name="id" value={p.id} />
-											<FormField
-												name="is_active"
-												render={() => (
-													<FormItem>
-														<FormLabel className="text-xs">公開</FormLabel>
-														<FormControl>
-															<input type="checkbox" name="is_active" defaultChecked={p.is_active} />
-														</FormControl>
-														<FormMessage />
-													</FormItem>
-												)}
-											/>
+											<label className="text-xs flex items-center gap-2">
+												公開
+												<input type="checkbox" name="is_active" defaultChecked={p.is_active} />
+											</label>
 											<button className="rounded-md border px-2 py-1 text-xs hover:bg-accent">更新</button>
 										</form>
-									</Form>
 								</td>
 								<td />
 								<td>
