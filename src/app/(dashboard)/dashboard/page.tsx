@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import type { Prisma } from "@prisma/client";
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -9,9 +8,7 @@ function startOfToday() {
   return d;
 }
 
-type RecentOrder = Prisma.OrderGetPayload<{
-  include: { product: { select: { title: true } } };
-}>;
+type RecentOrder = any;
 
 export default async function DashboardHome() {
   const since = startOfToday();
