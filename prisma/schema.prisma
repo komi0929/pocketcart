@@ -1,0 +1,136 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// InstaShop data models
+/// Supabase (PostgreSQL) を前提にしたスキーマ
+
+model User {
+  id                     String   @id @default(uuid()) @db.Uuid
+  // Supabase Auth のユーザーID（auth.users の id）
+  authUserId             String   @unique @db.Uuid
+  email                  String?  @unique
+  name                   String?
+  shopName               String?
+  shopSlug               String?
+  instagramUsername      String?
+  instagramUserId        String?
+  instagramAccessToken   String?
+  stripeCustomerId       String?
+  stripeAccountId        String?
+
+  // Relations
+  products               Product[]
+  orders                 Order[]
+  shippingRule           ShippingRule?
+  analyticsEvents        AnalyticsEvent[]
+
+  createdAt              DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt              DateTime @updatedAt @db.Timestamptz(6)
+}
+
+/// 重要: 地域別送料設定（User と 1:1）
+/// 構造（カラム名）は変更しないこと
+model ShippingRule {
+  id        String  @id @default(uuid()) @db.Uuid
+  userId    String  @unique @db.Uuid
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  hokkaido  Int
+  tohoku    Int
+  kanto     Int
+  chubu     Int
+  kinki     Int
+  chugoku   Int
+  shikoku   Int
+  kyushu    Int
+  okinawa   Int
+  cool_fee  Int     @default(330)
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+}
+
+/// Instagram 投稿から生成される商品
+model Product {
+  id                   String   @id @default(uuid()) @db.Uuid
+  userId               String   @db.Uuid
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title                String
+  description          String?
+  imageUrl             String?
+
+  price                Int
+  stock                Int
+  requires_cool        Boolean
+  is_active            Boolean  @default(false)
+
+  instagram_media_id   String   @unique
+
+  createdAt            DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt            DateTime @updatedAt @db.Timestamptz(6)
+
+  orders               Order[]
+
+  @@index([userId])
+}
+
+/// 注文情報
+model Order {
+  id                       String       @id @default(uuid()) @db.Uuid
+  userId                   String       @db.Uuid
+  user                     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  productId                String       @db.Uuid
+  product                  Product      @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  quantity                 Int          @default(1)
+
+  shipping_cost            Int
+  shipping_address_region  String
+
+  // 決済関連
+  amount_total             Int
+  stripe_payment_intent_id String?
+
+  status                   OrderStatus  @default(PENDING)
+  tracking_number          String?
+  shipped_at               DateTime?
+
+  createdAt                DateTime     @default(now()) @db.Timestamptz(6)
+  updatedAt                DateTime     @updatedAt @db.Timestamptz(6)
+
+  @@index([userId])
+  @@index([productId])
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  CANCELLED
+}
+
+model AnalyticsEvent {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String?  @db.Uuid
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  type      String
+  path      String?
+  props     Json?
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([type, createdAt])
+}
