@@ -51,6 +51,26 @@ export default async function DashboardHome() {
   const conversion =
     checkoutStarted > 0 ? Math.round((checkoutCompleted / checkoutStarted) * 100) : 0;
 
+  const renderRecentOrder = (o: RecentOrder) => (
+    <div key={o.id} className="py-3 flex items-center justify-between">
+      <div className="min-w-0">
+        <p className="truncate font-medium">
+          {o.product?.title ?? "商品"} × {o.quantity}
+        </p>
+        <p className="text-sm text-muted-foreground">
+          {new Date(o.createdAt).toLocaleString("ja-JP")} ・{" "}
+          {o.shipping_address_region}
+        </p>
+      </div>
+      <div className="text-right">
+        <div className="font-medium">
+          {new Intl.NumberFormat("ja-JP").format(o.amount_total)}円
+        </div>
+        <div className="text-xs text-muted-foreground">{o.status}</div>
+      </div>
+    </div>
+  );
+
   return (
     <main className="mx-auto max-w-6xl">
       <PageHeader
@@ -99,25 +119,7 @@ export default async function DashboardHome() {
               <p className="text-sm text-muted-foreground">まだ注文はありません。</p>
             ) : (
               <div className="divide-y">
-                {recentOrders.map((o: RecentOrder) => (
-                  <div key={o.id} className="py-3 flex items-center justify-between">
-                    <div className="min-w-0">
-                      <p className="truncate font-medium">
-                        {o.product?.title ?? "商品"} × {o.quantity}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {new Date(o.createdAt).toLocaleString("ja-JP")} ・{" "}
-                        {o.shipping_address_region}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <div className="font-medium">
-                        {new Intl.NumberFormat("ja-JP").format(o.amount_total)}円
-                      </div>
-                      <div className="text-xs text-muted-foreground">{o.status}</div>
-                    </div>
-                  </div>
-                ))}
+                {recentOrders.map(renderRecentOrder)}
               </div>
             )}
           </CardContent>
