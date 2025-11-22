@@ -39,7 +39,9 @@ export default function SettingsPage() {
 	const [message, setMessage] = useState<string | null>(null);
 
 	const form = useForm<ShippingRuleFormValues>({
-		resolver: zodResolver(shippingRuleSchema),
+		// Zod v4 と @hookform/resolvers の型整合性差異を回避
+		// ランタイムは問題ないため resolver の型だけ緩和する
+		resolver: zodResolver(shippingRuleSchema) as any,
 		defaultValues: emptyDefaults,
 		mode: "onSubmit",
 	});
