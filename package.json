@@ -6,7 +6,8 @@
     "dev": "set NEXT_DISABLE_TURBOPACK=1&& next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit && eslint . --max-warnings=0"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
