@@ -15,9 +15,7 @@ export function ToastOnQuery() {
 		const updated = search.get("updated");
 		const shipped = search.get("shipped");
 		const m =
-			t ??
-			(updated ? "保存しました。" : "") ||
-			(shipped ? "出荷状態を更新しました。" : "");
+			t ?? ((updated ? "保存しました。" : "") || (shipped ? "出荷状態を更新しました。" : ""));
 		if (m) {
 			setMessage(m);
 			setOpen(true);
