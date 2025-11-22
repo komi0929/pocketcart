@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { prisma } from "@/lib/prisma";
+import type { Order } from "@prisma/client";
 
 export async function GET() {
 	const supabase = createRouteHandlerClient({ cookies });
@@ -33,7 +34,7 @@ export async function GET() {
 			"created_at",
 			"shipped_at",
 		],
-		...orders.map((o) => [
+		...orders.map((o: Order & { product?: { title: string } | null }) => [
 			o.id,
 			o.product?.title ?? "",
 			o.quantity,
