@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import type { Order } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -9,26 +9,42 @@ function startOfToday() {
   return d;
 }
 
+type RecentOrder = Prisma.OrderGetPayload<{
+  include: { product: { select: { title: true } } };
+}>;
+
 export default async function DashboardHome() {
   const since = startOfToday();
 
+  // 型推論が崩れないよう、個別にPromiseを作ってからまとめて待機
+  const ordersTodayP = prisma.order.count({ where: { createdAt: { gte: since } } });
+  const paidAggP = prisma.order.aggregate({
+    _sum: { amount_total: true },
+    where: { status: "PAID", createdAt: { gte: since } },
+  });
+  const checkoutStartedP = prisma.analyticsEvent.count({
+    where: { type: "checkout_started", createdAt: { gte: since } },
+  });
+  const checkoutCompletedP = prisma.analyticsEvent.count({
+    where: { type: "checkout_completed", createdAt: { gte: since } },
+  });
+  const onboardingCompletedP = prisma.analyticsEvent.count({
+    where: { type: "onboarding_completed", createdAt: { gte: since } },
+  });
+  const recentOrdersP = prisma.order.findMany({
+    orderBy: { createdAt: "desc" },
+    take: 5,
+    include: { product: { select: { title: true } } },
+  });
+
   const [ordersToday, paidAgg, checkoutStarted, checkoutCompleted, onboardingCompleted, recentOrders] =
     await Promise.all([
-      prisma.order.count({ where: { createdAt: { gte: since } } }),
-      prisma.order.aggregate({
-        _sum: { amount_total: true },
-        where: { status: "PAID", createdAt: { gte: since } },
-      }),
-      prisma.analytics.readonly?.count
-        ? prisma.analytics.readonly.count({}) // placeholder when no access
-        : prisma.analyticsEvent.count({ where: { type: "checkout_started", createdAt: { gte: since } } }),
-      prisma.analyticsEvent.count({ where: { type: "checkout_completed", createdAt: { gte: since } } }),
-      prisma.analyticsEvent.count({ where: { type: "onboarding_completed", createdAt: { gte: since } } }),
-      prisma.order.findMany({
-        orderBy: { createdAt: "desc" },
-        take: 5,
-        include: { product: { select: { title: true } } },
-      }),
+      ordersTodayP,
+      paidAggP,
+      checkoutStartedP,
+      checkoutCompletedP,
+      onboardingCompletedP,
+      recentOrdersP,
     ]);
 
   const revenueToday = paidAgg._sum.amount_total ?? 0;
@@ -83,7 +99,7 @@ export default async function DashboardHome() {
               <p className="text-sm text-muted-foreground">まだ注文はありません。</p>
             ) : (
               <div className="divide-y">
-                {recentOrders.map((o: Order & { product?: { title: string } | null }) => (
+                {recentOrders.map((o: RecentOrder) => (
                   <div key={o.id} className="py-3 flex items-center justify-between">
                     <div className="min-w-0">
                       <p className="truncate font-medium">
