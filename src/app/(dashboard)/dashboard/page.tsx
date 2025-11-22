@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import type { Order } from "@prisma/client";
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -82,7 +83,7 @@ export default async function DashboardHome() {
               <p className="text-sm text-muted-foreground">まだ注文はありません。</p>
             ) : (
               <div className="divide-y">
-                {recentOrders.map((o) => (
+                {recentOrders.map((o: Order & { product?: { title: string } | null }) => (
                   <div key={o.id} className="py-3 flex items-center justify-between">
                     <div className="min-w-0">
                       <p className="truncate font-medium">
