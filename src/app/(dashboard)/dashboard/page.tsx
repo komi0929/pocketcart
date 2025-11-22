@@ -37,15 +37,15 @@ export default async function DashboardHome() {
     include: { product: { select: { title: true } } },
   });
 
-  const [ordersToday, paidAgg, checkoutStarted, checkoutCompleted, onboardingCompleted, recentOrders] =
+  const [ordersToday, paidAgg, checkoutStarted, checkoutCompleted, onboardingCompleted] =
     await Promise.all([
       ordersTodayP,
       paidAggP,
       checkoutStartedP,
       checkoutCompletedP,
       onboardingCompletedP,
-      recentOrdersP,
     ]);
+  const recentOrders: RecentOrder[] = await recentOrdersP;
 
   const revenueToday = paidAgg._sum.amount_total ?? 0;
   const conversion =
