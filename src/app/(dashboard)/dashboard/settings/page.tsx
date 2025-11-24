@@ -20,6 +20,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Separator } from "@/components/ui/separator";
 import { PageHeader } from "@/components/page-header";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 const emptyDefaults: ShippingRuleFormValues = {
 	hokkaido: 0,
 	tohoku: 0,
