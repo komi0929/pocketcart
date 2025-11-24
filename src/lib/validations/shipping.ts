@@ -2,7 +2,10 @@ import { z } from "zod";
 
 // 8地方区分 + クール便手数料（すべて Int, 0以上）
 const yenField = z
-	.coerce.number({ required_error: "必須です" })
+	.preprocess(
+		(v) => (v === "" || v === null || v === undefined ? undefined : v),
+		z.number({ required_error: "必須です", invalid_type_error: "数値で入力してください" }),
+	)
 	.int("整数で入力してください")
 	.min(0, { message: "0以上の数値を入力してください" });
 
