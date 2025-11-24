@@ -1,11 +1,17 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { BRAND_LOGO_PATH, APP_NAME } from "@/lib/brand";
 import { ToastOnQuery } from "@/components/toast-on-query";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
 	return (
 		<div>
-			<ToastOnQuery />
+			<Suspense fallback={null}>
+				<ToastOnQuery />
+			</Suspense>
 			<header className="border-b">
 				<nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
 					<Link href="/dashboard/products" className="flex items-center gap-2 font-semibold">
