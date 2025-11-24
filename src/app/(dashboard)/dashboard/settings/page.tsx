@@ -91,8 +91,7 @@ export default function SettingsPage() {
 			okinawa: 1500,
 			cool_fee: 330,
 		};
-		for (const [key, value] of Object.entries(preset)) {
-			// @ts-expect-error dynamic key
+		for (const [key, value] of Object.entries(preset) as [keyof ShippingRuleFormValues, number][]) {
 			form.setValue(key, value, { shouldValidate: true, shouldDirty: true });
 		}
 	}
