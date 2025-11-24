@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import Link from "next/link";
 import { Pagination } from "@/components/pagination";
 import { EmptyState } from "@/components/empty-state";
@@ -9,16 +10,15 @@ export default async function ProductsListPage({ searchParams }: Props) {
 	const q = searchParams?.q?.trim() ?? "";
 	const page = Math.max(1, Number(searchParams?.page ?? 1));
 	const pageSize = Math.min(48, Math.max(6, Number(searchParams?.pageSize ?? 12)));
-	const where = {
+	const orFilters: Prisma.ProductWhereInput[] = q
+		? [
+				{ title: { contains: q, mode: "insensitive" as Prisma.QueryMode } },
+				{ description: { contains: q, mode: "insensitive" as Prisma.QueryMode } },
+		  ]
+		: [];
+	const where: Prisma.ProductWhereInput = {
 		is_active: true,
-		...(q
-			? {
-					OR: [
-						{ title: { contains: q, mode: "insensitive" } },
-						{ description: { contains: q, mode: "insensitive" } },
-					],
-			  }
-			: {}),
+		...(orFilters.length ? { OR: orFilters } : {}),
 	};
 	const [total, products] = await Promise.all([
 		prisma.product.count({ where }),
