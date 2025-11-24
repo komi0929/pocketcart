@@ -10,6 +10,9 @@ import { Input } from "@/components/ui/input";
 import { cookies } from "next/headers";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 function formatPrice(value: number) {
 	return new Intl.NumberFormat("ja-JP", { style: "currency", currency: "JPY" }).format(value);
 }

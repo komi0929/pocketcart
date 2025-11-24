@@ -3,6 +3,9 @@ import { cookies } from "next/headers";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 export async function GET() {
 	const supabase = createRouteHandlerClient({ cookies });
 	const { data } = await supabase.auth.getUser();

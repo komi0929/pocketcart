@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/prisma";
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 

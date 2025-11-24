@@ -3,6 +3,9 @@ import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/page-header";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 export default async function OrdersPage() {
 	const supabase = createServerComponentClient({ cookies });
 	const { data } = await supabase.auth.getUser();

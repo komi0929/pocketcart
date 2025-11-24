@@ -1,5 +1,8 @@
 import { prisma } from "@/lib/prisma";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 type Props = { searchParams: { orderId?: string } };
 
 export default async function SuccessPage({ searchParams }: Props) {

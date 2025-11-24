@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/prisma";
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 import { REGION_LABELS, type RegionKey, PREFECTURES, prefectureToRegion } from "@/lib/regions";
 import { computeShippingCost } from "@/lib/shipping";
 import { createCheckoutSession } from "@/lib/actions/order";

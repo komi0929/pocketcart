@@ -1,6 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { markOrderShipped } from "@/lib/actions/order-admin";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 type Props = { params: { id: string } };
 
 function formatJPY(n: number) {

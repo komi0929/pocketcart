@@ -2,6 +2,9 @@ import { OnboardingProgress } from "@/components/onboarding/Progress";
 import Link from "next/link";
 import { saveInitialSettings } from "@/lib/actions/onboarding";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 export default function Step4() {
 	return (
 		<main className="mx-auto max-w-3xl px-6 py-10">

@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/prisma";
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 import { Prisma } from "@prisma/client";
 import Link from "next/link";
 import { Pagination } from "@/components/pagination";
