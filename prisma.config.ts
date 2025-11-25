@@ -3,12 +3,18 @@
 import "dotenv/config";
 import { defineConfig, env } from "prisma/config";
 
+// Prisma 7: 接続URLは schema.prisma ではなく prisma.config.ts で指定する
+const datasource: any = {
+  url: env("DATABASE_URL"),
+};
+if (process.env.DIRECT_URL) {
+  datasource.directUrl = env("DIRECT_URL");
+}
+
 export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: {
     path: "prisma/migrations",
   },
-  datasource: {
-    url: env("DATABASE_URL"),
-  },
+  datasource,
 });
