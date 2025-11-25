@@ -10,7 +10,10 @@ export async function saveInitialSettings(formData: FormData) {
 	const shopName = String(formData.get("shopName") || "").trim();
 	const shopSlug = String(formData.get("shopSlug") || "").trim();
 	const shippingType = String(formData.get("shippingType") || "flat");
-	const flatFee = Number(formData.get("flatFee") || 0);
+	let flatFee = Number(formData.get("flatFee") || 0);
+	if (shippingType === "free") {
+		flatFee = 0;
+	}
 
 	if (!shopName || !shopSlug) {
 		throw new Error("ショップ名とURLは必須です。");
@@ -56,7 +59,7 @@ export async function saveInitialSettings(formData: FormData) {
 	}
 
 	// 計測: オンボ完了
-	await logEventWithAuth("onboarding_completed", "/onboarding/step4", {
+	await logEventWithAuth("onboarding_completed", "/onboarding/step3", {
 		shipping: shippingType,
 	});
 

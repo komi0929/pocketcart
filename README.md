@@ -34,3 +34,17 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Environment variables (pocketcart)
+
+Set at least:
+
+- NEXT_PUBLIC_OAUTH_PROVIDER=facebook
+- FACEBOOK_APP_ID=your_facebook_app_id
+- FACEBOOK_APP_SECRET=your_facebook_app_secret
+
+Optional but recommended:
+
+- NEXT_PUBLIC_BASE_URL=https://your-domain.example
+
+Supabase/Stripe/Prisma variables are also required as configured in the project.

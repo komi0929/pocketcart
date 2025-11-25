@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { prisma } from "@/lib/prisma";
 
 type DiagnoseResult = {
 	authenticated: boolean;
@@ -80,6 +81,8 @@ export async function diagnoseInstagram(): Promise<DiagnoseResult> {
 	}
 	return result;
 }
+
+
 
 
 

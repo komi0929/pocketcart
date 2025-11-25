@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { APP_NAME } from "@/lib/brand";
@@ -17,7 +17,6 @@ export const metadata: Metadata = {
   title: APP_NAME,
   description: "pocketcart - Instagramからすぐに販売をはじめる",
   manifest: "/site.webmanifest",
-  themeColor: "#ff8a00",
   icons: {
     icon: [
       { url: "/brand/pocketcart-192.png", sizes: "192x192", type: "image/png" },
@@ -25,6 +24,10 @@ export const metadata: Metadata = {
     ],
     apple: [{ url: "/brand/pocketcart-180.png", sizes: "180x180", type: "image/png" }],
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#ff8a00",
 };
 
 export default function RootLayout({

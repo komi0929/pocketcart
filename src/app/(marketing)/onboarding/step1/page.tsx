@@ -1,35 +1,23 @@
 import { OnboardingProgress } from "@/components/onboarding/Progress";
+import { ConnectInstagramButton } from "@/components/connect-instagram-button";
 import Link from "next/link";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export default function Step1() {
 	return (
 		<main className="mx-auto max-w-3xl px-6 py-10">
 			<OnboardingProgress />
 			<section className="mt-6">
-				<h1 className="text-2xl font-semibold">pocketcart へようこそ</h1>
+				<h1 className="text-2xl font-semibold">Instagram 連携</h1>
 				<p className="mt-2 text-muted-foreground">
-					Instagram の投稿がそのまま商品ページになります。まずは Instagram
-					ユーザー名を入力してください。（公開情報のみを使用）
+					投稿の読み取りのみを行います。決済情報やパスワードにはアクセスしません。
 				</p>
-				<form action="/onboarding/step2" method="get" className="mt-6 flex items-end gap-3">
-					<label className="text-sm">
-						Instagramユーザー名
-						<div className="mt-1 flex items-center gap-2">
-							<span className="text-sm">@</span>
-							<Input name="username" placeholder="your_account" required className="w-64" />
-						</div>
-					</label>
-					<button className="rounded-md bg-primary px-5 py-2.5 text-primary-foreground shadow hover:opacity-90">
-						確認
-					</button>
-				</form>
-				<p className="mt-3 text-xs text-muted-foreground">
-					送信により利用規約・プライバシーポリシーに同意したものとみなします。
-				</p>
+				<div className="mt-6">
+					<ConnectInstagramButton />
+				</div>
 				<div className="mt-8">
-					<Link href="/onboarding/step3" className="text-sm underline">
-						飛ばして連携へ進む →
+					<Link href="/onboarding/step2">
+						<Button variant="ghost" className="text-sm underline">すでに連携済み → 次へ</Button>
 					</Link>
 				</div>
 			</section>

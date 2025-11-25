@@ -1,4 +1,3 @@
-const IG_BASIC_BASE = "https://graph.instagram.com";
 const FB_GRAPH_BASE = "https://graph.facebook.com/v21.0";
 
 type MediaItem = {
@@ -17,31 +16,7 @@ type Profile = {
 
 export async function getInstagramMedia(accessToken: string, maxCount = 50): Promise<MediaItem[]> {
 	const fields = ["id", "caption", "media_url", "media_type", "permalink"].join(",");
-	// 1) Basic Display 経由（provider_token が Instagram の場合）: ページング対応
-	{
-		let url = `${IG_BASIC_BASE}/me/media?fields=${fields}&access_token=${encodeURIComponent(
-			accessToken,
-		)}`;
-		let items: MediaItem[] = [];
-		for (let i = 0; i < 10 && items.length < maxCount; i++) {
-			const res = await fetch(url, { cache: "no-store" });
-			if (!res.ok) break;
-			const data = await res.json();
-			if (Array.isArray(data?.data)) {
-				items.push(...(data.data as MediaItem[]));
-				if (items.length >= maxCount) break;
-				const next = data?.paging?.next as string | undefined;
-				if (!next) break;
-				url = next;
-				continue;
-			}
-			break;
-		}
-		if (items.length > 0) {
-			return items.slice(0, maxCount);
-		}
-	}
-	// 2) Facebook Login 経由（Instagram Graph API）
+	// Facebook Login 経由（Instagram Graph API）
 	{
 		// ページ取得
 		const meAccounts = await fetch(
@@ -92,17 +67,6 @@ export async function getInstagramMedia(accessToken: string, maxCount = 50): Pro
 }
 
 export async function getInstagramProfile(accessToken: string): Promise<Profile> {
-	// Basic Display
-	{
-		const fields = ["id", "username", "account_type"].join(",");
-		const url = `${IG_BASIC_BASE}/me?fields=${fields}&access_token=${encodeURIComponent(
-			accessToken,
-		)}`;
-		const res = await fetch(url, { cache: "no-store" });
-		if (res.ok) {
-			return (await res.json()) as Profile;
-		}
-	}
 	// Facebook Graph 経由（ページ→IGユーザー）
 	{
 		const meAccounts = await fetch(

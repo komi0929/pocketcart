@@ -23,6 +23,12 @@ import { PageHeader } from "@/components/page-header";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+type IgStatus = {
+	hasToken: boolean;
+	username: string | null;
+	expiresAt?: string | null;
+};
+
 const emptyDefaults: ShippingRuleFormValues = {
 	hokkaido: 0,
 	tohoku: 0,
@@ -40,6 +46,7 @@ export default function SettingsPage() {
 	const [isPending, startTransition] = useTransition();
 	const [loading, setLoading] = useState(true);
 	const [message, setMessage] = useState<string | null>(null);
+	const [igStatus, setIgStatus] = useState<IgStatus | null>(null);
 
 	const form = useForm<ShippingRuleFormValues>({
 		// Zod v4 と @hookform/resolvers の型整合性差異を回避
@@ -53,6 +60,11 @@ export default function SettingsPage() {
 		let isMounted = true;
 		(async () => {
 			try {
+				// Instagram Graph status
+				const ig = await fetch("/api/facebook/status", { cache: "no-store" }).then((r) =>
+					r.json(),
+				);
+				if (isMounted) setIgStatus(ig);
 				const data = await getShippingRule();
 				if (isMounted && data) {
 					form.reset({
@@ -116,6 +128,37 @@ export default function SettingsPage() {
 		<main className="mx-auto max-w-4xl">
 			<PageHeader title="設定" description="地域別送料とクール便の手数料を設定します。" />
 			<div className="px-6 py-6">
+			<Card className="mb-6">
+				<CardHeader>
+					<CardTitle>Instagram 連携</CardTitle>
+					<CardDescription>Graph API の接続状態とトークン有効期限を確認できます。</CardDescription>
+				</CardHeader>
+				<CardContent className="flex items-center justify-between gap-4">
+					<div className="text-sm">
+						<div>
+							<span className="text-muted-foreground">ユーザー名: </span>
+							<span>{igStatus?.username ?? "-"}</span>
+						</div>
+						<div>
+							<span className="text-muted-foreground">トークン保存: </span>
+							<span>{igStatus?.hasToken ? "保存済み" : "未保存"}</span>
+						</div>
+					</div>
+					<Button
+						type="button"
+						variant="secondary"
+						onClick={async () => {
+							await fetch("/api/facebook/refresh", { method: "POST" });
+							const ig = await fetch("/api/facebook/status", {
+								cache: "no-store",
+							}).then((r) => r.json());
+							setIgStatus(ig);
+						}}
+					>
+						トークンを更新
+					</Button>
+				</CardContent>
+			</Card>
 			<Card>
 				<CardHeader>
 					<CardTitle>送料設定</CardTitle>

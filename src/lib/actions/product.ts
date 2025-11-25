@@ -6,6 +6,7 @@ import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { prisma } from "@/lib/prisma";
 import { getInstagramMedia, getInstagramProfile } from "@/lib/instagram";
 import { parsePriceFromCaption } from "@/utils/price-parser";
+import { exchangeLongLivedUserToken } from "@/lib/facebook-auth";
 
 function hasActiveHashtag(caption?: string | null): boolean {
 	if (!caption) return false;
@@ -20,11 +21,57 @@ async function getAuthAndToken() {
 		supabase.auth.getSession(),
 	]);
 	if (!userData.user) throw new Error("未認証です。");
-	const accessToken = sessionData.session?.provider_token ?? null;
-	return {
-		user: userData.user,
-		accessToken,
-	};
+	const providerToken = sessionData.session?.provider_token ?? null;
+
+	// 既存ユーザー/保存済みトークンを確認
+	const dbUser =
+		(await prisma.user.findUnique({
+			where: { authUserId: userData.user.id },
+		})) ??
+		(await prisma.user.create({
+			data: {
+				authUserId: userData.user.id,
+				email: userData.user.email ?? null,
+				name: userData.user.user_metadata?.name ?? null,
+			},
+		}));
+
+	// 1) 保存済みの長期トークンが有効ならそれを使う
+	if (dbUser.instagramAccessToken) {
+		return { user: userData.user, accessToken: dbUser.instagramAccessToken };
+	}
+
+	// 2) 保存がなければ、Supabaseの provider_token（短期Facebookユーザートークン）を長期へ交換して保存
+	if (providerToken) {
+		try {
+			const exchanged = await exchangeLongLivedUserToken(providerToken);
+			// プロフィールも取得して保存（username等）
+			let profileId: string | undefined;
+			let profileUsername: string | undefined;
+			try {
+				const profile = await getInstagramProfile(exchanged.access_token);
+				profileId = profile.id;
+				profileUsername = profile.username;
+			} catch {
+				// ignore
+			}
+			await prisma.user.update({
+				where: { id: dbUser.id },
+				data: {
+					instagramAccessToken: exchanged.access_token,
+					instagramUserId: profileId,
+					instagramUsername: profileUsername,
+				},
+			});
+			return { user: userData.user, accessToken: exchanged.access_token };
+		} catch {
+			// フォールバックとして短期トークンを返す（同期処理は通す）
+			return { user: userData.user, accessToken: providerToken };
+		}
+	}
+
+	// 3) どれも無ければ未連携
+	return { user: userData.user, accessToken: null };
 }
 
 export async function syncInstagramPosts(
