@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { headers } from "next/headers";
 import { cookies } from "next/headers";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { prisma } from "@/lib/prisma";
@@ -19,9 +20,14 @@ export async function GET(request: Request) {
 	}
 	const appId = process.env.INSTAGRAM_APP_ID;
 	const appSecret = process.env.INSTAGRAM_APP_SECRET;
-	const redirectUri =
-		process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/$/, "") +
-		"/api/instagram/oauth/callback";
+	// ENV優先、無ければ現在のホストから生成
+	const hdrs = headers();
+	const host = hdrs.get("host");
+	const proto = hdrs.get("x-forwarded-proto") || "https";
+	const origin =
+		process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/$/, "") ||
+		(host ? `${proto}://${host}` : "");
+	const redirectUri = origin ? `${origin}/api/instagram/oauth/callback` : "";
 	if (!appId || !appSecret || !redirectUri) {
 		return NextResponse.redirect("/onboarding/step1?error=missing_env");
 	}

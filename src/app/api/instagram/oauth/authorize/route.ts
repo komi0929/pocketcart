@@ -1,13 +1,19 @@
 import { NextResponse } from "next/server";
+import { headers } from "next/headers";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
 	const appId = process.env.INSTAGRAM_APP_ID;
-	const redirectUri =
-		process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/$/, "") +
-		"/api/instagram/oauth/callback";
+	// ベースURLはENV優先、無ければ現在のホストから生成
+	const hdrs = headers();
+	const host = hdrs.get("host");
+	const proto = hdrs.get("x-forwarded-proto") || "https";
+	const origin =
+		process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/$/, "") ||
+		(host ? `${proto}://${host}` : "");
+	const redirectUri = origin ? `${origin}/api/instagram/oauth/callback` : "";
 	if (!appId || !redirectUri) {
 		return NextResponse.json({ error: "missing_env" }, { status: 500 });
 	}
