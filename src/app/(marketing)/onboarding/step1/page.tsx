@@ -1,3 +1,5 @@
+\"use client\";
+
 import { OnboardingProgress } from "@/components/onboarding/Progress";
 import { ConnectInstagramButton } from "@/components/connect-instagram-button";
 import Link from "next/link";
