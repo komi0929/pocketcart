@@ -9,10 +9,10 @@ export function ConnectInstagramButton() {
 	async function handleConnect() {
 		const redirectTo =
 			(typeof window !== "undefined" ? window.location.origin : "") + "/auth/callback";
-		// Graph API 前提: Facebook ログインのみ
-		const provider = "facebook" as any;
-		const scopes =
-			"public_profile,email,pages_show_list,instagram_basic";
+		// ご要望に合わせて Instagram Login を使用
+		const provider = "instagram" as any;
+		// Graph用の最小スコープ
+		const scopes = "instagram_basic";
 		await supabase.auth.signInWithOAuth({ provider, options: { scopes, redirectTo } as any });
 	}
 

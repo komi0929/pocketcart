@@ -109,7 +109,9 @@ export async function syncInstagramPosts(
 		// ignore
 	}
 
-	const media = await getInstagramMedia(token, options?.maxItems ?? 50);
+	const media = await getInstagramMedia(token, options?.maxItems ?? 50, {
+		igUserId: dbUser.instagramUserId ?? null,
+	});
 
 	let upserted = 0;
 	for (const item of media) {
