@@ -21,7 +21,7 @@ export async function GET(request: Request) {
 	const appId = process.env.INSTAGRAM_APP_ID;
 	const appSecret = process.env.INSTAGRAM_APP_SECRET;
 	// ENV優先、無ければ現在のホストから生成
-	const hdrs = headers();
+	const hdrs = await headers();
 	const host = hdrs.get("host");
 	const proto = hdrs.get("x-forwarded-proto") || "https";
 	const origin =

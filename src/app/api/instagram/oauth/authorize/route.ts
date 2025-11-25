@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export async function GET() {
 	const appId = process.env.INSTAGRAM_APP_ID;
 	// ベースURLはENV優先、無ければ現在のホストから生成
-	const hdrs = headers();
+	const hdrs = await headers();
 	const host = hdrs.get("host");
 	const proto = hdrs.get("x-forwarded-proto") || "https";
 	const origin =
